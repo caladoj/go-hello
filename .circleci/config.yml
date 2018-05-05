@@ -18,6 +18,6 @@ jobs:
               -t go-hello:$TAG \
               -t 636841800822.dkr.ecr.us-east-1.amazonaws.com/caladoj/go-hello:$TAG \
               .
-            $(aws ecr get-login --no-include-email)
+            $(aws ecr get-login --region us-east-1 --no-include-email)
             docker push 636841800822.dkr.ecr.us-east-1.amazonaws.com/caladoj/go-hello:$TAG 
 
