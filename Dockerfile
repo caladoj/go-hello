@@ -1,23 +1,15 @@
 # Build Image
-
-FROM golang:1.10-stretch AS build
-
-RUN curl -sS -L -o /go/bin/dep https://github.com/golang/dep/releases/download/v0.4.1/dep-linux-amd64 \
-    && chmod 755 /go/bin/dep
-
-WORKDIR src/github.com/caladoj/go-hello
-
-COPY *.go .
-
-RUN dep init && go install
+FROM golang:1.10-alpine3.7 AS build
+RUN apk add --no-cache git vim
+RUN go get github.com/golang/dep/cmd/dep
+WORKDIR /go/src/github.com/caladoj/go-hello
+COPY Gopkg.* ./
+RUN dep ensure -vendor-only
+COPY *.go ./
+RUN go install
 
 # Runtime Image
-
-FROM golang:1.10-stretch
-
+FROM alpine:3.7
 COPY --from=build /go/bin/go-hello /go/bin/
-
-ENTRYPOINT go-hello
-
+ENTRYPOINT ["/go/bin/go-hello"]
 EXPOSE 80
-
