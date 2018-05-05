@@ -1,0 +1,26 @@
+version: 2
+jobs:
+  build:
+    docker:
+      - image: docker:18-git
+    steps:
+      - checkout
+      - setup_remote_docker:
+          docker_layer_caching: true
+      - run:
+          name: aws cli
+          command: |
+            apk update
+            apk add python3
+            pip3 install --upgrade pip
+            pip3 install awscli
+          name: go-hello runtime build
+          command: |
+            TAG=1.0.0-$CIRCLE_BUILD_NUM
+            docker build \
+              -t go-hello:$TAG \
+              -t 636841800822.dkr.ecr.us-east-1.amazonaws.com/caladoj/go-hello:$TAG \
+              .
+            $(aws ecr get-login --no-include-email)
+            docker push 636841800822.dkr.ecr.us-east-1.amazonaws.com/caladoj/go-hello:$TAG 
+
